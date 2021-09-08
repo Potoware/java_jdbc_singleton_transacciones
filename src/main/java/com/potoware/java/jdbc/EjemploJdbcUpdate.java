@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 
+import com.potoware.java.jdbc.models.Categoria;
 import com.potoware.java.jdbc.models.Producto;
 import com.potoware.java.jdbc.repositorio.ProductoRepositorio;
 import com.potoware.java.jdbc.repositorio.Repositorio;
@@ -21,13 +22,19 @@ public static void main(String[] args) {
 
 		repo.listar().forEach(System.out::println);
 		System.out.println("==============Obtener Por ID==================");
-		System.out.println(repo.porId(2L));
+		System.out.println(repo.porId(5L));
 		System.out.println("==============Eliminar Producto==================");
 		Producto producto = new Producto();
-		producto.setId(3L);
+		producto.setId(5L);
+		producto.setNombre("Cama Doble Pullman");
+		producto.setPrecio(500000);
+		Categoria categoria = new Categoria();
+		categoria.setId(3L);
 		
+		producto.setCategoria(categoria);
+	
 		
-		repo.eliminar(producto.getId());
+		repo.guardar(producto);
 		System.out.println("Se actualizo el producto");
 		repo.listar().forEach(System.out::println);
 		

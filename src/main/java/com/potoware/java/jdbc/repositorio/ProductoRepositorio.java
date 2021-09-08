@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.potoware.java.jdbc.models.Categoria;
 import com.potoware.java.jdbc.models.Producto;
 import com.potoware.java.jdbc.util.ConexionBaseDatos;
 
@@ -22,7 +23,7 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 		List<Producto> productos= new ArrayList<>();
 		
 		try (Statement stmt = getConnection().createStatement();
-				ResultSet resultSet = stmt.executeQuery("SELECT * FROM PRODUCTOS;");){
+				ResultSet resultSet = stmt.executeQuery("SELECT p.*,c.nombre as categoria FROM PRODUCTOS as p inner join categorias as c ON (p.categoria_id = c.id);");){
 			
 			while(resultSet.next()) {
 			
@@ -43,7 +44,7 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 	public Producto porId(Long id) {
 		Producto producto = null;
 		
-		try(PreparedStatement stmt = getConnection().prepareStatement("SELECT * FROM PRODUCTOS WHERE id = ?");)
+		try(PreparedStatement stmt = getConnection().prepareStatement("SELECT p.*,c.nombre as categoria FROM PRODUCTOS as p inner join categorias as c ON (p.categoria_id = c.id) WHERE p.id = ?");)
 		{
 			stmt.setLong(1, id);
 			ResultSet rs = stmt.executeQuery();
@@ -64,20 +65,21 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 		
 		String sql;
 		if (t.getId() != null && t.getId()>0) {
-			sql = "UPDATE productos SET nombre=?,precio=? where id=?";
+			sql = "UPDATE productos SET nombre=?,precio=?,categoria_id=? where id=?";
 		}
 		else {
-			sql = "INSERT INTO productos (nombre,precio,fecha_registro) VALUES(?,?,?)";
+			sql = "INSERT INTO productos (nombre,precio,categoria_id, fecha_registro) VALUES(?,?,?,?)";
 		}
 		try(PreparedStatement stmt = getConnection().prepareStatement(sql)){
 			
 			stmt.setString(1,t.getNombre());
 			stmt.setLong(2,t.getPrecio());
+			stmt.setLong(3, t.getCategoria().getId());
 			if (t.getId() != null && t.getId()>0) {
-				stmt.setLong(3, t.getId());
+				stmt.setLong(4, t.getId());
 			}
 		else {
-			stmt.setDate(3, new Date(t.getFechaRegistro().getTime()));
+			stmt.setDate(4, new Date(t.getFechaRegistro().getTime()));
 		}
 			stmt.executeUpdate();
 		} catch (SQLException e) {
@@ -101,11 +103,15 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 	
 	private Producto crearProducto(ResultSet resultSet) throws SQLException {
 		Producto p = new Producto();
+		Categoria c = new Categoria();
 		p.setId(resultSet.getLong("id"));
 		p.setNombre(resultSet.getString("nombre"));
 		
 		p.setPrecio(resultSet.getInt("precio"));
 		p.setFechaRegistro(resultSet.getDate("fecha_registro"));
+		c.setId(resultSet.getLong("categoria_id"));
+		c.setNombre(resultSet.getString("categoria"));
+		p.setCategoria(c);
 		return p;
 	}
 

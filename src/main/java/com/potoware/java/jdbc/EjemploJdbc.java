@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 
+import com.potoware.java.jdbc.models.Categoria;
 import com.potoware.java.jdbc.models.Producto;
 import com.potoware.java.jdbc.repositorio.ProductoRepositorio;
 import com.potoware.java.jdbc.repositorio.Repositorio;
@@ -25,9 +26,15 @@ public static void main(String[] args) {
 		System.out.println("==============Insertar Producto==================");
 		Producto producto = new Producto();
 		
-		producto.setNombre("Teclado Mecanico");
-		producto.setPrecio(300000);
+		producto.setNombre("Colchon Doble");
+		producto.setPrecio(1150000);
 		producto.setFechaRegistro(new Date());
+		
+		Categoria categoria = new Categoria();
+		categoria.setId(3L);
+		
+		producto.setCategoria(categoria);
+		
 		
 		repo.guardar(producto);
 		System.out.println("Se guardo el producto");
