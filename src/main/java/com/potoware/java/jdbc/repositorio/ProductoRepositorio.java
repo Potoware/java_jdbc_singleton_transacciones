@@ -65,21 +65,22 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 		
 		String sql;
 		if (t.getId() != null && t.getId()>0) {
-			sql = "UPDATE productos SET nombre=?,precio=?,categoria_id=? where id=?";
+			sql = "UPDATE productos SET nombre=?,precio=?,categoria_id=?,sku=? where id=?";
 		}
 		else {
-			sql = "INSERT INTO productos (nombre,precio,categoria_id, fecha_registro) VALUES(?,?,?,?)";
+			sql = "INSERT INTO productos (nombre,precio,categoria_id,sku=? fecha_registro) VALUES(?,?,?,?)";
 		}
 		try(PreparedStatement stmt = getConnection().prepareStatement(sql)){
 			
 			stmt.setString(1,t.getNombre());
 			stmt.setLong(2,t.getPrecio());
 			stmt.setLong(3, t.getCategoria().getId());
+			stmt.setString(4,t.getSku());
 			if (t.getId() != null && t.getId()>0) {
-				stmt.setLong(4, t.getId());
+				stmt.setLong(5, t.getId());
 			}
 		else {
-			stmt.setDate(4, new Date(t.getFechaRegistro().getTime()));
+			stmt.setDate(5, new Date(t.getFechaRegistro().getTime()));
 		}
 			stmt.executeUpdate();
 		} catch (SQLException e) {
@@ -112,6 +113,7 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 		c.setId(resultSet.getLong("categoria_id"));
 		c.setNombre(resultSet.getString("categoria"));
 		p.setCategoria(c);
+		p.setSku(resultSet.getString("sku"));
 		return p;
 	}
 
