@@ -1,6 +1,7 @@
 package com.potoware.java.jdbc.repositorio;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -24,12 +25,7 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 			
 			while(resultSet.next()) {
 			
-				Producto p = new Producto();
-				p.setId(resultSet.getLong("id"));
-				p.setNombre(resultSet.getString("nombre"));
-				
-				p.setPrecio(resultSet.getInt("precio"));
-				p.setFechaRegistro(resultSet.getDate("fecha_registro"));
+				Producto p = crearProducto(resultSet);
 				productos.add(p);
 			}
 			
@@ -40,10 +36,27 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 		
 		return productos;
 	}
+	
+	
 	@Override
 	public Producto porId(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		Producto producto = null;
+		
+		try(PreparedStatement stmt = getConnection().prepareStatement("SELECT * FROM PRODUCTOS WHERE id = ?");)
+		{
+			stmt.setLong(1, id);
+			ResultSet rs = stmt.executeQuery();
+			
+			if(rs.next()) {
+				producto = crearProducto(rs);
+			}
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return producto;
 	}
 	@Override
 	public void guardar(Producto t) {
@@ -54,6 +67,16 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 	public void eliminar(Long id) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private Producto crearProducto(ResultSet resultSet) throws SQLException {
+		Producto p = new Producto();
+		p.setId(resultSet.getLong("id"));
+		p.setNombre(resultSet.getString("nombre"));
+		
+		p.setPrecio(resultSet.getInt("precio"));
+		p.setFechaRegistro(resultSet.getDate("fecha_registro"));
+		return p;
 	}
 
 

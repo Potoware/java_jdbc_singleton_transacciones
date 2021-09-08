@@ -16,8 +16,8 @@ public static void main(String[] args) {
 	try (Connection conn = ConexionBaseDatos.getInstance();){
 		
 		Repositorio<Producto> repo = new ProductoRepositorio();
-		repo.listar().forEach(p-> System.out.println(p.getNombre()));
-		System.out.println();
+		repo.listar().forEach(System.out::println);
+		System.out.println(repo.porId(2L));
 				
 	} catch (SQLException e) {
 		e.printStackTrace();
