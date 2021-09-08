@@ -1,6 +1,6 @@
 package com.potoware.java.jdbc.models;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class Producto {
 	private Long id;
@@ -39,8 +39,8 @@ public class Producto {
 	public Date getFechaRegistro() {
 		return fechaRegistro;
 	}
-	public void setFechaRegistro(Date fechaRegistro) {
-		this.fechaRegistro = fechaRegistro;
+	public void setFechaRegistro(Date date) {
+		this.fechaRegistro = date;
 	}
 
 	@Override

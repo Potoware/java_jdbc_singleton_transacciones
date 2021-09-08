@@ -1,6 +1,7 @@
 package com.potoware.java.jdbc.repositorio;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -60,12 +61,41 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 	}
 	@Override
 	public void guardar(Producto t) {
-		// TODO Auto-generated method stub
+		
+		String sql;
+		if (t.getId() != null && t.getId()>0) {
+			sql = "UPDATE productos SET nombre=?,precio=? where id=?";
+		}
+		else {
+			sql = "INSERT INTO productos (nombre,precio,fecha_registro) VALUES(?,?,?)";
+		}
+		try(PreparedStatement stmt = getConnection().prepareStatement(sql)){
+			
+			stmt.setString(1,t.getNombre());
+			stmt.setLong(2,t.getPrecio());
+			if (t.getId() != null && t.getId()>0) {
+				stmt.setLong(3, t.getId());
+			}
+		else {
+			stmt.setDate(3, new Date(t.getFechaRegistro().getTime()));
+		}
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	@Override
 	public void eliminar(Long id) {
-		// TODO Auto-generated method stub
+		
+		try(PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM productos WHERE id=?")){
+			stmt.setLong(1, id);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
