@@ -19,7 +19,7 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 		return ConexionBaseDatos.getInstance();
 	}
 	@Override
-	public List<Producto> listar()  {
+	public List<Producto> listar() throws SQLException  {
 		List<Producto> productos= new ArrayList<>();
 		
 		try (Statement stmt = getConnection().createStatement();
@@ -31,17 +31,14 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 				productos.add(p);
 			}
 			
-		} catch (SQLException e) {
-
-			e.printStackTrace();
-		}
+		} 
 		
 		return productos;
 	}
 	
 	
 	@Override
-	public Producto porId(Long id) {
+	public Producto porId(Long id) throws SQLException {
 		Producto producto = null;
 		
 		try(PreparedStatement stmt = getConnection().prepareStatement("SELECT p.*,c.nombre as categoria FROM PRODUCTOS as p inner join categorias as c ON (p.categoria_id = c.id) WHERE p.id = ?");)
@@ -53,22 +50,19 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 				producto = crearProducto(rs);
 			}
 			rs.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		
 		return producto;
 	}
 	@Override
-	public void guardar(Producto t) {
+	public void guardar(Producto t) throws SQLException {
 		
 		String sql;
 		if (t.getId() != null && t.getId()>0) {
 			sql = "UPDATE productos SET nombre=?,precio=?,categoria_id=?,sku=? where id=?";
 		}
 		else {
-			sql = "INSERT INTO productos (nombre,precio,categoria_id,sku=? fecha_registro) VALUES(?,?,?,?)";
+			sql = "INSERT INTO productos (nombre,precio,categoria_id,sku, fecha_registro) VALUES(?,?,?,?,?)";
 		}
 		try(PreparedStatement stmt = getConnection().prepareStatement(sql)){
 			
@@ -83,22 +77,16 @@ public class ProductoRepositorio implements Repositorio<Producto>{
 			stmt.setDate(5, new Date(t.getFechaRegistro().getTime()));
 		}
 			stmt.executeUpdate();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		
 	}
 	@Override
-	public void eliminar(Long id) {
+	public void eliminar(Long id) throws SQLException {
 		
 		try(PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM productos WHERE id=?")){
 			stmt.setLong(1, id);
 			stmt.executeUpdate();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		
 	}
 	
